@@ -51,21 +51,21 @@ import Plutarch.Internal.IsData (PIsData (pdataImpl, pfromDataImpl), pdata, pfor
 import Plutarch.Internal.Lift (
   DeriveDataPLiftable,
   PLiftable (
-    AsHaskell,
-    PlutusRepr,
-    haskToRepr,
-    plutToRepr,
-    reprToHask,
-    reprToPlut
+    AsHaskell
+    -- PlutusRepr,
+    -- haskToRepr,
+    -- plutToRepr,
+    -- reprToHask,
+    -- reprToPlut
   ),
   PLifted (PLifted),
-  PLiftedClosed,
-  getPLiftedClosed,
-  mkPLifted,
-  mkPLiftedClosed,
-  pconstant,
-  pliftedFromClosed,
-  pliftedToClosed,
+  -- PLiftedClosed,
+  -- getPLiftedClosed,
+  -- mkPLifted,
+  -- mkPLiftedClosed,
+  -- pconstant,
+  -- pliftedFromClosed,
+  -- pliftedToClosed,
  )
 import Plutarch.Internal.ListLike (pcons, phead, pnil)
 import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
@@ -119,29 +119,29 @@ deriving via
     PlutusType (PEither a b)
 
 -- | @since 1.10.0
-instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
-  type AsHaskell (PEither a b) = Either (AsHaskell a) (AsHaskell b)
-  type PlutusRepr (PEither a b) = PLiftedClosed (PEither a b)
-  {-# INLINEABLE haskToRepr #-}
-  haskToRepr = \case
-    Left x -> mkPLiftedClosed $ pcon $ PLeft (pconstant @a x)
-    Right x -> mkPLiftedClosed $ pcon $ PRight (pconstant @b x)
-  {-# INLINEABLE reprToHask #-}
-  reprToHask x = do
-    isLeft :: Bool <- plutToRepr $ mkPLifted (pisLeft # getPLiftedClosed x)
-    if isLeft
-      then do
-        lr :: PlutusRepr a <- plutToRepr $ mkPLifted (pfromLeft # getPLiftedClosed x)
-        lh :: AsHaskell a <- reprToHask @a lr
-        pure $ Left lh
-      else do
-        rr :: PlutusRepr b <- plutToRepr $ mkPLifted (pfromRight # getPLiftedClosed x)
-        rh :: AsHaskell b <- reprToHask @b rr
-        pure $ Right rh
-  {-# INLINEABLE reprToPlut #-}
-  reprToPlut = pliftedFromClosed
-  {-# INLINEABLE plutToRepr #-}
-  plutToRepr = Right . pliftedToClosed
+-- instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
+--   type AsHaskell (PEither a b) = Either (AsHaskell a) (AsHaskell b)
+--   type PlutusRepr (PEither a b) = PLiftedClosed (PEither a b)
+--   {-# INLINEABLE haskToRepr #-}
+--   haskToRepr = \case
+--     Left x -> mkPLiftedClosed $ pcon $ PLeft (pconstant @a x)
+--     Right x -> mkPLiftedClosed $ pcon $ PRight (pconstant @b x)
+--   {-# INLINEABLE reprToHask #-}
+--   reprToHask x = do
+--     isLeft :: Bool <- plutToRepr $ mkPLifted (pisLeft # getPLiftedClosed x)
+--     if isLeft
+--       then do
+--         lr :: PlutusRepr a <- plutToRepr $ mkPLifted (pfromLeft # getPLiftedClosed x)
+--         lh :: AsHaskell a <- reprToHask @a lr
+--         pure $ Left lh
+--       else do
+--         rr :: PlutusRepr b <- plutToRepr $ mkPLifted (pfromRight # getPLiftedClosed x)
+--         rh :: AsHaskell b <- reprToHask @b rr
+--         pure $ Right rh
+--   {-# INLINEABLE reprToPlut #-}
+--   reprToPlut = pliftedFromClosed
+--   {-# INLINEABLE plutToRepr #-}
+--   plutToRepr = Right . pliftedToClosed
 
 -- | @since 1.10.0
 pisLeft ::

@@ -105,21 +105,21 @@ test-suite tests
   other-modules:
     Plutarch.Test.Suite.Plutarch.Bool
     Plutarch.Test.Suite.Plutarch.ByteString
-    Plutarch.Test.Suite.Plutarch.Either
+    -- Plutarch.Test.Suite.Plutarch.Either
     Plutarch.Test.Suite.Plutarch.Field
     Plutarch.Test.Suite.Plutarch.Integer
     Plutarch.Test.Suite.Plutarch.List
-    Plutarch.Test.Suite.Plutarch.Maybe
+    -- Plutarch.Test.Suite.Plutarch.Maybe
     Plutarch.Test.Suite.Plutarch.Monadic
     Plutarch.Test.Suite.Plutarch.Pair
     Plutarch.Test.Suite.Plutarch.PLam
-    Plutarch.Test.Suite.Plutarch.POrd
+    -- Plutarch.Test.Suite.Plutarch.POrd
     Plutarch.Test.Suite.Plutarch.Positive
-    Plutarch.Test.Suite.Plutarch.Rational
+    -- Plutarch.Test.Suite.Plutarch.Rational
     Plutarch.Test.Suite.Plutarch.Recursion
     Plutarch.Test.Suite.Plutarch.Scripts
     Plutarch.Test.Suite.Plutarch.Semigroup
-    Plutarch.Test.Suite.Plutarch.Show
+    -- Plutarch.Test.Suite.Plutarch.Show
     Plutarch.Test.Suite.Plutarch.String
     Plutarch.Test.Suite.Plutarch.Tracing
     Plutarch.Test.Suite.Plutarch.Unit

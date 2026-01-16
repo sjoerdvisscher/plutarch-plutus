@@ -32,21 +32,7 @@ import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.String (PString, ptraceInfo)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (
-  PLiftable (
-    AsHaskell,
-    PlutusRepr,
-    haskToRepr,
-    plutToRepr,
-    reprToHask,
-    reprToPlut
-  ),
-  PLiftedClosed,
-  getPLiftedClosed,
-  mkPLifted,
-  mkPLiftedClosed,
   pconstant,
-  pliftedFromClosed,
-  pliftedToClosed,
  )
 import Plutarch.Internal.ListLike (PElemConstraint, PListLike, pcons, pnil, precList)
 import Plutarch.Internal.PLam (plam)
@@ -65,6 +51,7 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
+
 
 -- | @since 1.10.0
 data PMaybe (a :: S -> Type) (s :: S)
@@ -85,26 +72,26 @@ data PMaybe (a :: S -> Type) (s :: S)
 deriving via DeriveAsSOPStruct (PMaybe a) instance PlutusType (PMaybe a)
 
 -- | @since 1.10.0
-instance PLiftable a => PLiftable (PMaybe a) where
-  type AsHaskell (PMaybe a) = Maybe (AsHaskell a)
-  type PlutusRepr (PMaybe a) = PLiftedClosed (PMaybe a)
-  {-# INLINEABLE haskToRepr #-}
-  haskToRepr = \case
-    Nothing -> mkPLiftedClosed $ pcon PNothing
-    Just x -> mkPLiftedClosed $ pcon $ PJust (pconstant @a x)
-  {-# INLINEABLE reprToHask #-}
-  reprToHask x = do
-    isJust :: Bool <- plutToRepr $ mkPLifted (pisJust # getPLiftedClosed x)
-    if isJust
-      then do
-        vr :: PlutusRepr a <- plutToRepr $ mkPLifted (pfromJust # getPLiftedClosed x)
-        vh :: AsHaskell a <- reprToHask @a vr
-        pure $ Just vh
-      else pure Nothing
-  {-# INLINEABLE reprToPlut #-}
-  reprToPlut = pliftedFromClosed
-  {-# INLINEABLE plutToRepr #-}
-  plutToRepr = Right . pliftedToClosed
+-- instance (PLiftable a) => PLiftable (PMaybe a) where
+--   type AsHaskell (PMaybe a) = Maybe (AsHaskell a)
+--   type PlutusRepr (PMaybe a) = PLiftedClosed (PMaybe a)
+--   {-# INLINEABLE haskToRepr #-}
+--   haskToRepr = \case
+--     Nothing -> mkPLiftedClosed $ pcon PNothing
+--     Just x -> mkPLiftedClosed $ pcon $ PJust (pconstant @a x)
+--   {-# INLINEABLE reprToHask #-}
+--   reprToHask x = do
+--     isJust :: Bool <- plutToRepr $ mkPLifted (pisJust # getPLiftedClosed x)
+--     if isJust
+--       then do
+--         vr :: PlutusRepr a <- plutToRepr $ mkPLifted (pfromJust # getPLiftedClosed x)
+--         vh :: AsHaskell a <- reprToHask @a vr
+--         pure $ Just vh
+--       else pure Nothing
+--   {-# INLINEABLE reprToPlut #-}
+--   reprToPlut = pliftedFromClosed
+--   {-# INLINEABLE plutToRepr #-}
+--   plutToRepr = Right . pliftedToClosed
 
 -- | Extracts the element out of a 'PJust' and throws an error if its argument is 'PNothing'.
 pfromJust ::

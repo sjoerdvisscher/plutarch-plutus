@@ -84,7 +84,7 @@ import Plutarch.Internal.Term (
 import Plutarch.Script (Script (Script))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusCore qualified as PLC
-import PlutusCore.Builtin (BuiltinError, readKnownConstant)
+import PlutusCore.Builtin (BuiltinError, readKnownConstant, KnownBuiltinType)
 import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381.G1
 import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381.G2
 import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS12_381.Pairing
@@ -154,7 +154,7 @@ Together, these imply @plift . pconstant = id@.
 
 @since 1.10.0
 -}
-class PlutusType a => PLiftable (a :: S -> Type) where
+class (PlutusType a, KnownBuiltinType (UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) (PlutusRepr a)) => PLiftable (a :: S -> Type) where
   type AsHaskell a :: Type
 
   -- Implementation note: we need this second repr type because builtin
@@ -288,6 +288,7 @@ newtype DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
 instance
   ( PlutusType a
   , PLC.DefaultUni `Includes` h
+  , KnownBuiltinType (UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) h
   ) =>
   PLiftable (DeriveBuiltinPLiftable a h)
   where

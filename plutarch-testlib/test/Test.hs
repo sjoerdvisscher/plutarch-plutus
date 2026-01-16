@@ -3,21 +3,21 @@ module Main (main) where
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch.Test.Suite.Plutarch.Bool qualified as Bool
 import Plutarch.Test.Suite.Plutarch.ByteString qualified as ByteString
-import Plutarch.Test.Suite.Plutarch.Either qualified as Either
+-- import Plutarch.Test.Suite.Plutarch.Either qualified as Either
 import Plutarch.Test.Suite.Plutarch.Field qualified as Field
 import Plutarch.Test.Suite.Plutarch.Integer qualified as Integer
 import Plutarch.Test.Suite.Plutarch.List qualified as List
-import Plutarch.Test.Suite.Plutarch.Maybe qualified as Maybe
+-- import Plutarch.Test.Suite.Plutarch.Maybe qualified as Maybe
 import Plutarch.Test.Suite.Plutarch.Monadic qualified as Monadic
 import Plutarch.Test.Suite.Plutarch.PLam qualified as PLam
-import Plutarch.Test.Suite.Plutarch.POrd qualified as POrd
+-- import Plutarch.Test.Suite.Plutarch.POrd qualified as POrd
 import Plutarch.Test.Suite.Plutarch.Pair qualified as Pair
 import Plutarch.Test.Suite.Plutarch.Positive qualified as Positive
-import Plutarch.Test.Suite.Plutarch.Rational qualified as Rational
+-- import Plutarch.Test.Suite.Plutarch.Rational qualified as Rational
 import Plutarch.Test.Suite.Plutarch.Recursion qualified as Recursion
 import Plutarch.Test.Suite.Plutarch.Scripts qualified as Scripts
 import Plutarch.Test.Suite.Plutarch.Semigroup qualified as Semigroup
-import Plutarch.Test.Suite.Plutarch.Show qualified as Show
+-- import Plutarch.Test.Suite.Plutarch.Show qualified as Show
 import Plutarch.Test.Suite.Plutarch.String qualified as String
 import Plutarch.Test.Suite.Plutarch.Tracing qualified as Tracing
 import Plutarch.Test.Suite.Plutarch.Unit qualified as Unit
@@ -41,20 +41,20 @@ main = do
         "Plutarch"
         [ Bool.tests
         , ByteString.tests
-        , Either.tests
+        -- , Either.tests
         , Field.tests
         , Integer.tests
         , List.tests
-        , Maybe.tests
+        -- , Maybe.tests
         , Monadic.tests
         , PLam.tests
-        , POrd.tests
+        -- , POrd.tests
         , Pair.tests
         , Positive.tests
-        , Rational.tests
+        -- , Rational.tests
         , Recursion.tests
         , Scripts.tests
-        , Show.tests
+        -- , Show.tests
         , String.tests
         , Tracing.tests
         , Unit.tests

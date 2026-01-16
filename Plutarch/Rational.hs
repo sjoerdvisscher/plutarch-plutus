@@ -21,21 +21,21 @@ import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Lift (
-  PLiftable (
-    AsHaskell,
-    PlutusRepr,
-    haskToRepr,
-    plutToRepr,
-    reprToHask,
-    reprToPlut
-  ),
-  PLiftedClosed,
-  getPLiftedClosed,
-  mkPLifted,
-  mkPLiftedClosed,
+  -- PLiftable (
+    -- AsHaskell,
+    -- PlutusRepr,
+    -- haskToRepr,
+    -- plutToRepr,
+    -- reprToHask,
+    -- reprToPlut
+  -- ),
+  -- PLiftedClosed,
+  -- getPLiftedClosed,
+  -- mkPLifted,
+  -- mkPLiftedClosed,
   pconstant,
-  pliftedFromClosed,
-  pliftedToClosed,
+  -- pliftedFromClosed,
+  -- pliftedToClosed,
  )
 import Plutarch.Internal.ListLike (phead, pnil, ptail)
 import Plutarch.Internal.Numeric (
@@ -49,10 +49,10 @@ import Plutarch.Internal.Numeric (
   PRing (pfromInteger),
   pdiv,
   pmod,
-  positiveToInteger,
+  -- positiveToInteger,
   pquot,
   ptryPositive,
-  toPositiveAbs,
+  -- toPositiveAbs,
  )
 import Plutarch.Internal.Ord (
   POrd ((#<), (#<=)),
@@ -82,7 +82,7 @@ import Plutarch.Repr.SOP (DeriveAsSOPRec (DeriveAsSOPRec))
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
-import PlutusTx.Ratio qualified as PlutusTx
+-- import PlutusTx.Ratio qualified as PlutusTx
 
 {- | A Scott-encoded rational number, with a guaranteed positive denominator
 (and thus, a canonical form).
@@ -103,33 +103,33 @@ data PRational s
 deriving via (DeriveAsSOPRec PRational) instance PlutusType PRational
 
 -- | @since 1.10.0
-instance PLiftable PRational where
-  type AsHaskell PRational = PlutusTx.Rational
-  type PlutusRepr PRational = PLiftedClosed PRational
-  {-# INLINEABLE haskToRepr #-}
-  haskToRepr r =
-    let n = PlutusTx.numerator r
-        d = PlutusTx.denominator r
-     in case signum n of
-          0 -> mkPLiftedClosed $ pcon $ PRational 0 pone
-          _ ->
-            let dabs = toPositiveAbs d
-             in case signum d of
-                  (-1) ->
-                    mkPLiftedClosed $ pcon . PRational (pconstant . negate $ n) . pconstant $ dabs
-                  _ ->
-                    mkPLiftedClosed $ pcon . PRational (pconstant n) . pconstant $ dabs
-  {-# INLINEABLE reprToHask #-}
-  reprToHask x = do
-    n <- plutToRepr $ mkPLifted (pnumerator # getPLiftedClosed x)
-    dr :: PlutusRepr PPositive <- plutToRepr $ mkPLifted (pdenominator # getPLiftedClosed x)
-    d <- reprToHask @PPositive dr
-    pure . PlutusTx.unsafeRatio n . positiveToInteger $ d
+-- instance PLiftable PRational where
+--   type AsHaskell PRational = PlutusTx.Rational
+--   type PlutusRepr PRational = PLiftedClosed PRational
+--   {-# INLINEABLE haskToRepr #-}
+--   haskToRepr r =
+--     let n = PlutusTx.numerator r
+--         d = PlutusTx.denominator r
+--      in case signum n of
+--           0 -> mkPLiftedClosed $ pcon $ PRational 0 pone
+--           _ ->
+--             let dabs = toPositiveAbs d
+--              in case signum d of
+--                   (-1) ->
+--                     mkPLiftedClosed $ pcon . PRational (pconstant . negate $ n) . pconstant $ dabs
+--                   _ ->
+--                     mkPLiftedClosed $ pcon . PRational (pconstant n) . pconstant $ dabs
+--   {-# INLINEABLE reprToHask #-}
+--   reprToHask x = do
+--     n <- plutToRepr $ mkPLifted (pnumerator # getPLiftedClosed x)
+--     dr :: PlutusRepr PPositive <- plutToRepr $ mkPLifted (pdenominator # getPLiftedClosed x)
+--     d <- reprToHask @PPositive dr
+--     pure . PlutusTx.unsafeRatio n . positiveToInteger $ d
 
-  {-# INLINEABLE plutToRepr #-}
-  plutToRepr = Right . pliftedToClosed
-  {-# INLINEABLE reprToPlut #-}
-  reprToPlut = pliftedFromClosed
+--   {-# INLINEABLE plutToRepr #-}
+--   plutToRepr = Right . pliftedToClosed
+--   {-# INLINEABLE reprToPlut #-}
+--   reprToPlut = pliftedFromClosed
 
 instance PEq PRational where
   {-# INLINEABLE (#==) #-}
@@ -253,30 +253,30 @@ instance PIntegralDomain PRational where
         pone
 
 -- | @since 1.10.0
-instance Fractional (Term s PRational) where
-  {-# INLINEABLE (/) #-}
-  x / y = inner # x # y
-    where
-      inner :: forall (s :: S). Term s (PRational :--> PRational :--> PRational)
-      inner = phoistAcyclic $ plam $ \x y -> pmatch x $ \(PRational xn xd) ->
-        pmatch y $ \(PRational yn yd) ->
-          plet (pto xd * yn) $ \denm ->
-            pif
-              (denm #== 0)
-              (ptraceInfoError "Cannot divide by zero")
-              (preduce' # (xn * pto yd) # denm)
-  {-# INLINEABLE recip #-}
-  recip x = inner # x
-    where
-      inner :: forall (s :: S). Term s (PRational :--> PRational)
-      inner = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational xn xd) ->
-        pcond
-          [ (xn #== 0, ptraceInfoError "attempted to construct the reciprocal of zero")
-          , (xn #<= 0, pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
-          ]
-          (pcon $ PRational (pto xd) (punsafeCoerce xn))
-  {-# INLINEABLE fromRational #-}
-  fromRational = pconstant . PlutusTx.fromGHC
+-- instance Fractional (Term s PRational) where
+--   {-# INLINEABLE (/) #-}
+--   x / y = inner # x # y
+--     where
+--       inner :: forall (s :: S). Term s (PRational :--> PRational :--> PRational)
+--       inner = phoistAcyclic $ plam $ \x y -> pmatch x $ \(PRational xn xd) ->
+--         pmatch y $ \(PRational yn yd) ->
+--           plet (pto xd * yn) $ \denm ->
+--             pif
+--               (denm #== 0)
+--               (ptraceInfoError "Cannot divide by zero")
+--               (preduce' # (xn * pto yd) # denm)
+--   {-# INLINEABLE recip #-}
+--   recip x = inner # x
+--     where
+--       inner :: forall (s :: S). Term s (PRational :--> PRational)
+--       inner = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational xn xd) ->
+--         pcond
+--           [ (xn #== 0, ptraceInfoError "attempted to construct the reciprocal of zero")
+--           , (xn #<= 0, pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
+--           ]
+--           (pcon $ PRational (pto xd) (punsafeCoerce xn))
+--   {-# INLINEABLE fromRational #-}
+--   fromRational = pconstant . PlutusTx.fromHaskellRatio
 
 instance PShow PRational where
   pshow' _ x =
